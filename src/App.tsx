@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "./App.scss";
-import {FaBeer, FaSkull} from "react-icons/fa";
+import {FaSkull} from "react-icons/fa";
 
 interface ColumnProps {
     value: number;
@@ -21,14 +21,11 @@ interface ColumnListProps {
 const shuffle = (array: number[]) => {
     let currentIndex = array.length, randomIndex;
 
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
+    while (currentIndex !== 0) {
 
-        // Pick a remaining element.
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
 
-        // And swap it with the current element.
         [array[currentIndex], array[randomIndex]] = [
             array[randomIndex], array[currentIndex]];
     }
@@ -48,7 +45,6 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
 
     const bubbleSort = async () => {
         setIsSorting(true);
-        // Tri des valeurs (par exemple, le tri à bulles)
         for (let i = 0; i < sortedValues.length; i++) {
             for (let j = 0; j < sortedValues.length - i - 1; j++) {
                 if (sortedValues[j] > sortedValues[j + 1]) {
@@ -90,7 +86,7 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
         setIsSorting(false);
     };
 
-    async function partition(arr: number[], low: number, high: number) {
+    const partition = async (arr: number[], low: number, high: number) => {
         const pivot = arr[high];
         let i = low - 1;
         for (let j = low; j < high; j++) {
@@ -108,7 +104,7 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
         return i + 1;
     }
 
-    async function quickSort(arr: number[], low: number = 0, high: number = arr.length - 1) {
+    const quickSort = async (arr: number[], low: number = 0, high: number = arr.length - 1) => {
         if (low < high) {
             const partitionIndex = await partition(arr, low, high);
             await quickSort(arr, low, partitionIndex - 1);
@@ -123,10 +119,10 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
         setSortedValues(await quickSort([...values], 0, values.length - 1));
     }
 
-    async function bogosort(arr: number[]){
+    const bogosort = async (arr: number[]) => {
         function isSorted(arr: number[]): boolean {
             for (let i = 1; i < arr.length; i++) {
-                if (arr[i] < arr[i-1]) {
+                if (arr[i] < arr[i - 1]) {
                     return false;
                 }
             }
@@ -150,14 +146,12 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
     }
 
 
-
     const handleBogoSort = async () => {
         setIsSorting(true);
         setSortedValues(await bogosort(values));
     }
 
     const handleReset = () => {
-        //setSortedValues([...values]);
         setSortedValues([...shuffle(values)]);
     };
 
@@ -172,7 +166,7 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
                 <button disabled={isSorting} onClick={handleQuickSort}>Quick sort</button>
                 <button disabled={isSorting} onClick={bubbleSort}>Bubble Sort</button>
                 <button disabled={isSorting} onClick={insertionSort}>Insertion Sort</button>
-                <button disabled={isSorting} onClick={handleBogoSort} className="bogosort"><FaSkull /> <p>bogosort</p></button>
+                <button disabled={isSorting} onClick={handleBogoSort} className="bogosort"><FaSkull/> <p>bogosort</p></button>
                 <button disabled={isSorting} onClick={handleReset}>Reset</button>
             </div>
             <div className="timer-container">
