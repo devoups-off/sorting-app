@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/fractal.iml" filepath="$PROJECT_DIR$/.idea/fractal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sorting-app.iml" filepath="$PROJECT_DIR$/.idea/sorting-app.iml" />
     </modules>
   </component>
 </project>
