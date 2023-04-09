@@ -110,13 +110,13 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
             await quickSort(arr, low, partitionIndex - 1);
             await quickSort(arr, partitionIndex + 1, high);
         }
-        setIsSorting(false);
         return arr;
     }
 
     const handleQuickSort = async () => {
         setIsSorting(true);
         setSortedValues(await quickSort([...values], 0, values.length - 1));
+        setIsSorting(false);
     }
 
     const bogosort = async (arr: number[]) => {
