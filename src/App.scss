@@ -20,7 +20,7 @@
 }
 
 .column {
-  width: 10px;
+  width: 7px;
   border: solid gray 1px;
   display: flex;
   justify-content: center;
@@ -33,6 +33,9 @@
 
 .button-container {
   display: flex;
+  select {
+    margin-right: 1rem;
+  }
 }
 
 button {
@@ -91,5 +94,16 @@ button {
       color: white;
       font-weight: 600;
     }
+  }
+}
+
+.stalinSort {
+  border-color: red;
+  background-color: red;
+  color: yellow;
+  &:hover {
+    border-color: red;
+    background-color: red;
+    color: yellow;
   }
 }

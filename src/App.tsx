@@ -9,7 +9,7 @@ interface ColumnProps {
 
 const Column: React.FC<ColumnProps> = ({value, index}) => {
     return (
-        <div className="column" style={{height: value * 14}}>
+        <div className="column" style={{height: value * 10}}>
         </div>
     );
 };
@@ -38,6 +38,7 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
     const [withDelay, setWithDelay] = useState<boolean>(true);
     const [delay, setDelay] = useState<number>(10);
     const [isSorting, setIsSorting] = useState<boolean>(false);
+    const [selectedSort, setSelectedSort] = useState<string>("bubbleSort");
 
     function sleep(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -145,14 +146,136 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
         return arr;
     }
 
+    const stalinSort = async (arr: number[]) => {
+        let sortedArr = [arr[0]]; // On commence avec le premier élément dans la liste triée
+
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i] >= sortedArr[sortedArr.length - 1]) {
+                sortedArr.push(arr[i]); // On ajoute l'élément à la liste triée s'il est dans l'ordre
+            }
+            if (withDelay) {
+                await sleep(delay);
+            }
+            setSortedValues([...sortedArr]);
+        }
+
+        return sortedArr; // On retourne la liste triée
+    }
+
 
     const handleBogoSort = async () => {
         setIsSorting(true);
         setSortedValues(await bogosort(values));
     }
 
+
+
+    const handleStalinSort = async () => {
+        setIsSorting(true);
+        setSortedValues(await stalinSort(values));
+        setIsSorting(false);
+    }
+
+    const mergeSort = async (arr: number[], left: number = 0, right: number = arr.length - 1) => {
+        if (left >= right) {
+            return;
+        }
+        const middle = Math.floor((left + right) / 2);
+        await mergeSort(arr, left, middle);
+        await mergeSort(arr, middle + 1, right);
+        await merge(arr, left, middle, right);
+    }
+
+    const merge = async (arr: number[], left: number, middle: number, right: number) => {
+        const leftArr = arr.slice(left, middle + 1);
+        const rightArr = arr.slice(middle + 1, right + 1);
+
+        let i = 0,
+            j = 0,
+            k = left;
+
+        while (i < leftArr.length && j < rightArr.length) {
+            if (leftArr[i] <= rightArr[j]) {
+                arr[k] = leftArr[i];
+                i++;
+            } else {
+                arr[k] = rightArr[j];
+                j++;
+            }
+            if (withDelay) {
+                await sleep(delay);
+            }
+            setSortedValues([...arr]);
+            k++;
+        }
+
+        while (i < leftArr.length) {
+            arr[k] = leftArr[i];
+            if (withDelay) {
+                await sleep(delay);
+            }
+            setSortedValues([...arr]);
+            i++;
+            k++;
+        }
+
+        while (j < rightArr.length) {
+            arr[k] = rightArr[j];
+            if (withDelay) {
+                await sleep(delay);
+            }
+            setSortedValues([...arr]);
+            j++;
+            k++;
+        }
+    }
+
+    const handleMergeSort = async (values: number[]) => {
+        setIsSorting(true);
+        await mergeSort(values);
+        setIsSorting(false);
+    }
+
+
+    const selectionSort = async (arr: number[]) => {
+        setIsSorting(true);
+        const n = arr.length;
+        for (let i = 0; i < n - 1; i++) {
+            let minIndex = i;
+            for (let j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            if (minIndex !== i) {
+                [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+                if (withDelay) {
+                    await sleep(delay);
+                }
+                setSortedValues([...arr]);
+            }
+        }
+        setIsSorting(false);
+        return arr;
+    }
+
+
+    const SortAlgorithms: any = {
+        bubbleSort: {name: "Bubble sort", sortFunc: bubbleSort},
+        insertionSort: {name: "Insertion sort", sortFunc: insertionSort},
+        quickSort: {name: "Quick sort", sortFunc: handleQuickSort},
+        bogosort: {name: "Bogosort", sortFunc: handleBogoSort},
+        stalinSort: {name: "Stalin sort", sortFunc: handleStalinSort},
+        mergeSort: {name: "Merge Sort", sortFunc: handleMergeSort},
+        selectionSort: {name: "Selection Sort", sortFunc: selectionSort},
+    };
+
     const handleReset = () => {
         setSortedValues([...shuffle(values)]);
+    };
+
+    const handleSort = async () => {
+        await SortAlgorithms[selectedSort].sortFunc(values);
     };
 
     return (
@@ -163,10 +286,16 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
                 ))}
             </div>
             <div className="button-container">
-                <button disabled={isSorting} onClick={handleQuickSort}>Quick sort</button>
-                <button disabled={isSorting} onClick={bubbleSort}>Bubble Sort</button>
-                <button disabled={isSorting} onClick={insertionSort}>Insertion Sort</button>
-                <button disabled={isSorting} onClick={handleBogoSort} className="bogosort"><FaSkull/> <p>bogosort</p></button>
+                <select value={selectedSort} onChange={e => setSelectedSort(e.target.value)}>
+                    {Object.keys(SortAlgorithms).map(sortKey => (
+                        <option key={sortKey} value={sortKey}>
+                            {sortKey}
+                        </option>
+                    ))}
+                </select>
+                <button onClick={handleSort} disabled={isSorting}>
+                    {isSorting ? "Sorting..." : "Sort"}
+                </button>
                 <button disabled={isSorting} onClick={handleReset}>Reset</button>
             </div>
             <div className="timer-container">
@@ -194,7 +323,7 @@ const ColumnList: React.FC<ColumnListProps> = ({values}) => {
 export default function App() {
 
     let columns = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 70; i++) {
         columns.push(i + 1);
     }
 
